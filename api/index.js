@@ -27,14 +27,14 @@ const ALL_UNIVERSE_IDS = UNIVERSE_IDS.length > 0
     ? UNIVERSE_IDS 
     : [UNIVERSE_ID_1, UNIVERSE_ID_2].filter(id => id);
 
-const DATASTORE_NAME = 'SaweriaDonations';
+const DATASTORE_NAME = 'SociaBuzzDonations'; // ✅ CHANGED
 const DATASTORE_KEY = 'AllDonations';
 
 // Queue untuk game server
 let donationQueue = [];
 
 console.log('╔════════════════════════════════════════╗');
-console.log('║  Saweria Backend - Multi-Universe     ║');
+console.log('║  SociaBuzz Backend - Multi-Universe   ║'); // ✅ CHANGED
 console.log('╚════════════════════════════════════════╝');
 console.log('Universe IDs:', ALL_UNIVERSE_IDS.length);
 ALL_UNIVERSE_IDS.forEach((id, idx) => console.log(`  ${idx + 1}. ${id}`));
@@ -120,7 +120,7 @@ async function saveDonationToAllUniverses(donationData) {
     console.log(`\n╔════════════════════════════════════════╗`);
     console.log(`║  SAVING TO ALL UNIVERSES              ║`);
     console.log(`╚════════════════════════════════════════╝`);
-    console.log(`Platform: Saweria`);
+    console.log(`Platform: SociaBuzz`); // ✅ CHANGED
     console.log(`Donor: ${donationData.nama}`);
     console.log(`Amount: Rp ${donationData.amount.toLocaleString('id-ID')}`);
     console.log(`Message: "${donationData.message}"`);
@@ -235,21 +235,22 @@ async function saveDonationToAllUniverses(donationData) {
 }
 
 // ============================================
-// WEBHOOK ENDPOINT
+// WEBHOOK ENDPOINT - SOCIABUZZ FORMAT
 // ============================================
 
-app.post('/api/saweria', async (req, res) => {
-    console.log('\n🎁 SAWERIA WEBHOOK RECEIVED');
+app.post('/api/sociabuzz', async (req, res) => { // ✅ CHANGED
+    console.log('\n🎁 SOCIABUZZ WEBHOOK RECEIVED'); // ✅ CHANGED
     console.log('Body:', JSON.stringify(req.body, null, 2));
     
     try {
+        // ✅ SOCIABUZZ FORMAT MAPPING
         const donationData = {
-            nama: req.body.donator_name || 'Anonymous',
-            amount: parseInt(req.body.amount_raw) || parseInt(req.body.amount) || 0,
-            message: req.body.message || 'Terima kasih atas dukungannya!',
+            nama: req.body.supporter_name || req.body.name || 'Anonymous', // SociaBuzz uses "supporter_name"
+            amount: parseInt(req.body.amount) || 0, // SociaBuzz directly sends "amount"
+            message: req.body.supporter_message || req.body.message || 'Terima kasih atas dukungannya!', // SociaBuzz uses "supporter_message"
             timestamp: req.body.created_at || new Date().toISOString(),
             id: req.body.id || Date.now().toString(),
-            email: req.body.donator_email || ''
+            email: req.body.supporter_email || req.body.email || '' // SociaBuzz uses "supporter_email"
         };
         
         if (!donationData.nama || donationData.amount <= 0) {
@@ -289,7 +290,8 @@ app.post('/api/saweria', async (req, res) => {
     }
 });
 
-app.get('/api/saweria/get-donations', (req, res) => {
+// ✅ CHANGED: Endpoint untuk Roblox polling
+app.get('/api/sociabuzz/get-donations', (req, res) => {
     const donations = [...donationQueue];
     donationQueue = [];
     res.json({ success: true, donations: donations });
@@ -299,7 +301,7 @@ app.get('/api/health', (req, res) => {
     res.json({ 
         status: 'OK',
         timestamp: new Date().toISOString(),
-        platform: 'Saweria',
+        platform: 'SociaBuzz', // ✅ CHANGED
         version: '2.2.0',
         openCloud: {
             configured: !!(ROBLOX_API_KEY && ALL_UNIVERSE_IDS.length > 0),
@@ -314,12 +316,12 @@ app.get('/api/health', (req, res) => {
 
 app.get('/api', (req, res) => {
     res.json({ 
-        name: 'Saweria Webhook API',
+        name: 'SociaBuzz Webhook API', // ✅ CHANGED
         version: '2.2.0',
-        platform: 'Saweria',
+        platform: 'SociaBuzz', // ✅ CHANGED
         endpoints: {
-            webhook: 'POST /api/saweria',
-            getDonations: 'GET /api/saweria/get-donations',
+            webhook: 'POST /api/sociabuzz', // ✅ CHANGED
+            getDonations: 'GET /api/sociabuzz/get-donations', // ✅ CHANGED
             health: 'GET /api/health'
         }
     });

@@ -1,7 +1,7 @@
 {
-  "name": "saweria-webhook-backend",
+  "name": "sociabuzz-webhook-backend",
   "version": "2.2.0",
-  "description": "Saweria webhook with Roblox Open Cloud",
+  "description": "SociaBuzz webhook with Roblox Open Cloud",
   "main": "api/index.js",
   "scripts": {
     "start": "node api/index.js"
@@ -15,5 +15,5 @@
   "engines": {
     "node": ">=18.x"
   },
-  "keywords": ["saweria", "webhook", "roblox"]
+  "keywords": ["sociabuzz", "webhook", "roblox"]
 }
